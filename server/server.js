@@ -13,6 +13,11 @@ const io = new Server(server, { cors: { origin: '*' } });
 app.use(express.json());
 app.use(cors());
 
+// ✅ Default Route for Browser Testing
+app.get('/', (req, res) => {
+    res.send('✅ Tower Defense Server is Running!');
+});
+
 // Routes
 const userRoutes = require('./routes/userRoutes');
 const gameRoutes = require('./routes/gameRoutes');
