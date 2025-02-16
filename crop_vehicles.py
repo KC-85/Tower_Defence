@@ -11,7 +11,7 @@ OUTPUT_FOLDER = "output_cropped"
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 def auto_crop_image(image_path, output_path):
-    """ Automatically crops an image by detecting non-transparent areas. """
+    """ Automatically crops an image by detecting non-transparent areas and multiple contours. """
     # Load image
     img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
 
@@ -19,7 +19,7 @@ def auto_crop_image(image_path, output_path):
         print(f"⚠ Error loading image: {image_path}")
         return
 
-    # Convert to grayscale & create mask for non-transparent areas
+    # Convert to grayscale and create a mask for non-transparent areas
     if img.shape[-1] == 4:  # If image has transparency (RGBA)
         alpha_channel = img[:, :, 3]
         mask = alpha_channel > 0  # Keep non-transparent parts
@@ -27,13 +27,22 @@ def auto_crop_image(image_path, output_path):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         _, mask = cv2.threshold(gray, 1, 255, cv2.THRESH_BINARY)
 
-    # Find contours of the object
+    # Find contours of all objects
     contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     if contours:
-        # Get bounding box for the largest contour
-        x, y, w, h = cv2.boundingRect(contours[0])
-        cropped = img[y:y+h, x:x+w]  # Crop image to bounding box
+        # Get bounding box that encloses all objects
+        x_min, y_min, x_max, y_max = img.shape[1], img.shape[0], 0, 0
+
+        for contour in contours:
+            x, y, w, h = cv2.boundingRect(contour)
+            x_min = min(x_min, x)
+            y_min = min(y_min, y)
+            x_max = max(x_max, x + w)
+            y_max = max(y_max, y + h)
+
+        # Ensure we crop properly
+        cropped = img[y_min:y_max, x_min:x_max]
 
         # Convert back to PIL Image & save
         pil_image = Image.fromarray(cv2.cvtColor(cropped, cv2.COLOR_BGRA2RGBA))
