@@ -6,12 +6,10 @@ class GameScene extends Phaser.Scene {
     }
 
     preload() {
-        // Load assets
-        this.load.image('background', '/assets/background.png'); // Add your background image
-        this.load.image('tower', '/assets/tower.png');
-        this.load.image('bullet', '/assets/bullet.png');
+        // Load background
+        this.load.image('background', '/assets/background.png');
 
-        // Load enemy sprites
+        // Load enemy sprites from new cropped images
         this.load.image('lightTank', '/assets/enemies/light_tank.png');
         this.load.image('mediumTank', '/assets/enemies/medium_tank.png');
         this.load.image('heavyTank', '/assets/enemies/heavy_tank.png');
@@ -19,48 +17,17 @@ class GameScene extends Phaser.Scene {
         this.load.image('mediumAircraft', '/assets/enemies/medium_aircraft.png');
         this.load.image('heavyAircraft', '/assets/enemies/heavy_aircraft.png');
         this.load.image('jeep', '/assets/enemies/jeep.png');
-        this.load.image('halfTrack', '/assets/enemies/half_track.png');
+        this.load.image('apc', '/assets/enemies/apc.png'); // Updated from half-track
+        this.load.image('mammothTank', '/assets/enemies/mammoth_tank.png'); // Boss wave
+        this.load.image('heavyBomber', '/assets/enemies/heavy_bomber.png'); // Boss wave
     }
 
     create() {
         // Add background
         this.add.image(400, 300, 'background');
 
-        // Tower placement (static)
-        this.towers = this.add.group();
-        this.addTower(150, 350);
-        this.addTower(400, 400);
-        this.addTower(650, 300);
-
-        // Enemy movement logic
-        this.enemies = this.add.group();
-        this.spawnEnemies();
-
-        // Shooting bullets
-        this.bullets = this.add.group();
-
-        // Add timed event for shooting
-        this.time.addEvent({
-            delay: 1000, // Shoot every 1 second
-            callback: this.shootBullet,
-            callbackScope: this,
-            loop: true
-        });
-    }
-
-    /**
-     * Adds a tower at the specified position.
-     */
-    addTower(x, y) {
-        let tower = this.add.image(x, y, 'tower').setScale(0.5);
-        this.towers.add(tower);
-    }
-
-    /**
-     * Spawns enemies on screen and moves them.
-     */
-    spawnEnemies() {
-        const enemyData = [
+        // Example enemy spawn with new sprites
+        this.spawnEnemies([
             { type: 'lightTank', x: 50, y: 100 },
             { type: 'mediumTank', x: 50, y: 150 },
             { type: 'heavyTank', x: 50, y: 200 },
@@ -68,13 +35,26 @@ class GameScene extends Phaser.Scene {
             { type: 'mediumAircraft', x: 50, y: 300 },
             { type: 'heavyAircraft', x: 50, y: 350 },
             { type: 'jeep', x: 50, y: 400 },
-            { type: 'halfTrack', x: 50, y: 450 }
-        ];
+            { type: 'apc', x: 50, y: 450 }
+        ]);
 
+        // Add special boss enemy every 10th wave
+        this.time.addEvent({
+            delay: 10000, // Every 10 seconds (simulating every 10th wave)
+            callback: () => {
+                this.spawnBossWave();
+            },
+            loop: true
+        });
+    }
+
+    spawnEnemies(enemyData) {
+        this.enemies = [];
         enemyData.forEach(({ type, x, y }) => {
             let enemy = this.add.image(x, y, type).setScale(0.8);
-            this.enemies.add(enemy);
+            this.enemies.push(enemy);
 
+            // Move enemy across the screen
             this.tweens.add({
                 targets: enemy,
                 x: 800,
@@ -84,20 +64,17 @@ class GameScene extends Phaser.Scene {
         });
     }
 
-    /**
-     * Shoots bullets from towers.
-     */
-    shootBullet() {
-        this.towers.children.iterate(tower => {
-            let bullet = this.add.image(tower.x, tower.y - 20, 'bullet').setScale(0.5);
-            this.bullets.add(bullet);
-
-            this.tweens.add({
-                targets: bullet,
-                x: 800,
-                duration: 2000,
-                onComplete: () => bullet.destroy()
-            });
+    spawnBossWave() {
+        console.log("🚨 Boss wave incoming!");
+        let bossType = Math.random() > 0.5 ? 'mammothTank' : 'heavyBomber';
+        let boss = this.add.image(50, 250, bossType).setScale(1.2);
+        
+        // Move boss enemy slowly
+        this.tweens.add({
+            targets: boss,
+            x: 800,
+            duration: 10000, // Moves slower than regular enemies
+            repeat: 0
         });
     }
 }
