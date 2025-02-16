@@ -10,16 +10,16 @@ class GameScene extends Phaser.Scene {
         this.load.image('background', '/assets/background.png');
 
         // Load enemy sprites from new cropped images
-        this.load.image('lightTank', '/assets/enemies/light_tank.png');
-        this.load.image('mediumTank', '/assets/enemies/medium_tank.png');
-        this.load.image('heavyTank', '/assets/enemies/heavy_tank.png');
-        this.load.image('lightAircraft', '/assets/enemies/light_aircraft.png');
-        this.load.image('mediumAircraft', '/assets/enemies/medium_aircraft.png');
-        this.load.image('heavyAircraft', '/assets/enemies/heavy_aircraft.png');
-        this.load.image('jeep', '/assets/enemies/jeep.png');
-        this.load.image('apc', '/assets/enemies/apc.png'); // Updated from half-track
-        this.load.image('mammothTank', '/assets/enemies/mammoth_tank.png'); // Boss wave
-        this.load.image('heavyBomber', '/assets/enemies/heavy_bomber.png'); // Boss wave
+        this.load.image('lightTank', 'assets/enemies/Light_Tank.png');
+        this.load.image('mediumTank', 'assets/enemies/Medium_Tank.png');
+        this.load.image('heavyTank', 'assets/enemies/Heavy_Tank.png');
+        this.load.image('lightAircraft', 'assets/enemies/Light_Aircraft.png');
+        this.load.image('mediumAircraft', 'assets/enemies/Medium_Aircraft.png');
+        this.load.image('heavyAircraft', 'assets/enemies/Heavy_Aircraft.png');
+        this.load.image('jeep', 'assets/enemies/Jeep.png');
+        this.load.image('apc', 'assets/enemies/APC.png'); // Corrected from Half-Track
+        this.load.image('mammothTank', 'assets/enemies/Mammoth_Tank.png'); // Boss wave
+        this.load.image('heavyBomber', 'assets/enemies/Heavy_Bomber.png'); // Boss wave
     }
 
     create() {
